@@ -118,7 +118,11 @@ var random_hex_color_code = function () {
     return '#' + n.slice(0, 6);
 };
 function randomIntFromInterval(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    var rand = Math.floor(Math.random() * (max - min + 1) + min);
+    if (rand === 0) {
+        rand = randomIntFromInterval(min, max);
+    }
+    return rand;
 }
 // Usage
 var simulation = new CanvasSimulation({ containerId: 'root' });
@@ -129,13 +133,13 @@ var i = 0;
 while (i <= numParticles && i < simulation.MAX_ITER) {
     particles.push(new Particle({
         ctx: simulation.ctx,
-        x: 100,
-        y: 100,
+        x: randomIntFromInterval(0, simulation.canvas.width),
+        y: randomIntFromInterval(0, simulation.canvas.height),
         radius: 10,
         color: random_hex_color_code(),
-        speed: 2,
-        velocityX: 2,
-        velocityY: 1,
+        speed: 1,
+        velocityX: randomIntFromInterval(-2, 2),
+        velocityY: randomIntFromInterval(-2, 2),
     }));
     i++;
 }
