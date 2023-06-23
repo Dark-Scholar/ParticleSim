@@ -1,3 +1,27 @@
+var Boundary = /** @class */ (function () {
+    function Boundary(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+    Boundary.prototype.isCollidingWith = function (particle) {
+        var x = particle.x, y = particle.y, radius = particle.radius;
+        return x + radius > this.x + this.width || x - radius < this.x || y + radius > this.y + this.height || y - radius < this.y;
+    };
+    Boundary.prototype.resolveCollision = function (particle) {
+        var x = particle.x, y = particle.y, radius = particle.radius, velocityX = particle.velocityX, velocityY = particle.velocityY;
+        // Resolve collision with left or right border
+        if (x + radius > this.x + this.width || x - radius < this.x) {
+            particle.velocityX = -velocityX; // Reverse the X velocity
+        }
+        // Resolve collision with top or bottom border
+        if (y + radius > this.y + this.height || y - radius < this.y) {
+            particle.velocityY = -velocityY; // Reverse the Y velocity
+        }
+    };
+    return Boundary;
+}());
 var CanvasSimulation = /** @class */ (function () {
     function CanvasSimulation(_a) {
         var containerId = _a.containerId, width = _a.width, height = _a.height;
@@ -8,6 +32,8 @@ var CanvasSimulation = /** @class */ (function () {
             this.canvas.width = width;
             this.canvas.height = height;
         }
+    }
+    CanvasSimulation.prototype.initialize = function () {
         if (this.root) {
             this.root.style.backgroundColor = 'white';
             this.root.style.borderRadius = '2%';
@@ -23,7 +49,8 @@ var CanvasSimulation = /** @class */ (function () {
         if (this.root) {
             this.root.appendChild(this.canvas);
         }
-    }
+        this.boundary = new Boundary(0, 0, this.canvas.width, this.canvas.height);
+    };
     CanvasSimulation.prototype.resizeCanvas = function () {
         if (this.root && this.ctx) {
             this.canvas.width = this.root.offsetWidth;
@@ -41,7 +68,7 @@ var CanvasSimulation = /** @class */ (function () {
 }());
 var Particle = /** @class */ (function () {
     function Particle(_a) {
-        var ctx = _a.ctx, x = _a.x, y = _a.y, radius = _a.radius, color = _a.color, velocityX = _a.velocityX, velocityY = _a.velocityY;
+        var ctx = _a.ctx, x = _a.x, y = _a.y, radius = _a.radius, color = _a.color, speed = _a.speed, velocityX = _a.velocityX, velocityY = _a.velocityY;
         this.ctx = ctx;
         this.x = x;
         this.y = y;
@@ -49,6 +76,7 @@ var Particle = /** @class */ (function () {
         this.color = color;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
+        this.speed = speed;
     }
     Particle.prototype.draw = function () {
         this.ctx.beginPath();
@@ -64,19 +92,21 @@ var Particle = /** @class */ (function () {
     };
     Particle.prototype.update = function () {
         // Update particle position based on velocity
-        this.x += this.velocityX;
-        this.y += this.velocityY;
+        this.x += this.velocityX * this.speed;
+        this.y += this.velocityY * this.speed;
     };
     return Particle;
 }());
 // Usage
 var simulation = new CanvasSimulation({ containerId: 'root' });
+simulation.initialize();
 var particle = new Particle({
     ctx: simulation.ctx,
     x: 100,
     y: 100,
     radius: 10,
     color: 'blue',
+    speed: 0.1,
     velocityX: 2,
     velocityY: 1,
 });
@@ -88,7 +118,10 @@ var animate = function () {
     // Draw and update particle
     particle.draw();
     particle.update();
+    if (simulation.boundary.isCollidingWith(particle)) {
+        simulation.boundary.resolveCollision(particle);
+    }
     // Update the animation
     requestAnimationFrame(animate);
 };
-// animate();
+animate();

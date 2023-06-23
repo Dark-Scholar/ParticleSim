@@ -14,10 +14,44 @@ interface ParticleProps {
   velocityY: number;
 }
 
+class Boundary {
+  private x: number;
+  private y: number;
+  private width: number;
+  private height: number;
+
+  constructor(x: number, y: number, width: number, height: number) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  isCollidingWith(particle: Particle): boolean {
+    const { x, y, radius } = particle;
+    return x + radius > this.x + this.width || x - radius < this.x || y + radius > this.y + this.height || y - radius < this.y;
+  }
+
+  resolveCollision(particle: Particle) {
+    const { x, y, radius, velocityX, velocityY } = particle;
+
+    // Resolve collision with left or right border
+    if (x + radius > this.x + this.width || x - radius < this.x) {
+      particle.velocityX = -velocityX; // Reverse the X velocity
+    }
+
+    // Resolve collision with top or bottom border
+    if (y + radius > this.y + this.height || y - radius < this.y) {
+      particle.velocityY = -velocityY; // Reverse the Y velocity
+    }
+  }
+}
+
 class CanvasSimulation {
   private root: HTMLElement | null;
   public canvas: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D | null;
+  public boundary: Boundary;
 
   constructor({
     containerId,
@@ -32,7 +66,9 @@ class CanvasSimulation {
       this.canvas.width = width;
       this.canvas.height = height;
     }
+  }
 
+  initialize() {
     if (this.root) {
       this.root.style.backgroundColor = 'white';
       this.root.style.borderRadius = '2%';
@@ -49,6 +85,8 @@ class CanvasSimulation {
     if (this.root) {
       this.root.appendChild(this.canvas);
     }
+
+    this.boundary = new Boundary(0, 0, this.canvas.width, this.canvas.height);
   }
 
   private resizeCanvas() {
@@ -69,12 +107,13 @@ class CanvasSimulation {
 
 class Particle {
   private ctx: CanvasRenderingContext2D;
-  private x: number;
-  private y: number;
-  private radius: number;
+  public x: number;
+  public y: number;
+  public radius: number;
   private color: string;
-  private velocityX: number;
-  private velocityY: number;
+  public velocityX: number;
+  public velocityY: number;
+  private speed: number;
 
   constructor({
     ctx,
@@ -82,6 +121,7 @@ class Particle {
     y,
     radius,
     color,
+    speed,
     velocityX,
     velocityY,
   }) {
@@ -92,6 +132,7 @@ class Particle {
     this.color = color;
     this.velocityX = velocityX;
     this.velocityY = velocityY;
+    this.speed = speed;
   }
 
   draw() {
@@ -111,19 +152,22 @@ class Particle {
 
   update() {
     // Update particle position based on velocity
-    this.x += this.velocityX;
-    this.y += this.velocityY;
+    this.x += this.velocityX * this.speed;
+    this.y += this.velocityY * this.speed;
   }
 }
 
 // Usage
 const simulation = new CanvasSimulation({ containerId: 'root' });
+simulation.initialize();
+
 const particle = new Particle({
   ctx: simulation.ctx!,
   x: 100,
   y: 100,
   radius: 10,
   color: 'blue',
+  speed: 0.1,
   velocityX: 2,
   velocityY: 1,
 });
@@ -138,8 +182,12 @@ const animate = () => {
   particle.draw();
   particle.update();
 
+  if (simulation.boundary.isCollidingWith(particle)) {
+    simulation.boundary.resolveCollision(particle);
+  }
+
   // Update the animation
   requestAnimationFrame(animate);
 };
 
-// animate();
+animate();
