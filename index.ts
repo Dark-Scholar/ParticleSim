@@ -10,6 +10,7 @@ interface ParticleProps {
   y: number;
   radius: number;
   color: string;
+  speed: number;
   velocityX: number;
   velocityY: number;
 }
@@ -29,7 +30,12 @@ class Boundary {
 
   isCollidingWith(particle: Particle): boolean {
     const { x, y, radius } = particle;
-    return x + radius > this.x + this.width || x - radius < this.x || y + radius > this.y + this.height || y - radius < this.y;
+    return (
+      x + radius > this.x + this.width ||
+      x - radius < this.x ||
+      y + radius > this.y + this.height ||
+      y - radius < this.y
+    );
   }
 
   resolveCollision(particle: Particle) {
@@ -82,11 +88,11 @@ class CanvasSimulation {
       this.resizeCanvas();
     }
 
-    if (this.root) {
-      this.root.appendChild(this.canvas);
-    }
-
     this.boundary = new Boundary(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  clearCanvas() {
+    simulation.ctx?.clearRect(0, 0, simulation.canvas.width, simulation.canvas.height);
   }
 
   private resizeCanvas() {
@@ -124,7 +130,7 @@ class Particle {
     speed,
     velocityX,
     velocityY,
-  }) {
+  }: ParticleProps) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;
@@ -167,7 +173,7 @@ const particle = new Particle({
   y: 100,
   radius: 10,
   color: 'blue',
-  speed: 0.1,
+  speed: 2,
   velocityX: 2,
   velocityY: 1,
 });
@@ -176,7 +182,7 @@ particle.draw();
 
 const animate = () => {
   // Clear Canvase
-  simulation.ctx?.clearRect(0, 0, simulation.canvas.width, simulation.canvas.height);
+  simulation.clearCanvas();
 
   // Draw and update particle
   particle.draw();
