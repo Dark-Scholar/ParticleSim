@@ -40,23 +40,55 @@ var CanvasSimulation = /** @class */ (function () {
     return CanvasSimulation;
 }());
 var Particle = /** @class */ (function () {
-    function Particle(ctx, x, y, radius, color) {
+    function Particle(_a) {
+        var ctx = _a.ctx, x = _a.x, y = _a.y, radius = _a.radius, color = _a.color, velocityX = _a.velocityX, velocityY = _a.velocityY;
         this.ctx = ctx;
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.color = color;
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
     }
     Particle.prototype.draw = function () {
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         this.ctx.fillStyle = this.color;
+        // Add shadow for 3D effect
+        this.ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.shadowBlur = 0.6;
+        this.ctx.shadowOffsetX = 3;
+        this.ctx.shadowOffsetY = 3;
         this.ctx.fill();
         this.ctx.closePath();
+    };
+    Particle.prototype.update = function () {
+        // Update particle position based on velocity
+        this.x += this.velocityX;
+        this.y += this.velocityY;
     };
     return Particle;
 }());
 // Usage
 var simulation = new CanvasSimulation({ containerId: 'root' });
-var particle = new Particle(simulation.ctx, 100, 100, 10, 'blue');
+var particle = new Particle({
+    ctx: simulation.ctx,
+    x: 100,
+    y: 100,
+    radius: 10,
+    color: 'blue',
+    velocityX: 2,
+    velocityY: 1,
+});
 particle.draw();
+var animate = function () {
+    var _a;
+    // Clear Canvase
+    (_a = simulation.ctx) === null || _a === void 0 ? void 0 : _a.clearRect(0, 0, simulation.canvas.width, simulation.canvas.height);
+    // Draw and update particle
+    particle.draw();
+    particle.update();
+    // Update the animation
+    requestAnimationFrame(animate);
+};
+// animate();
