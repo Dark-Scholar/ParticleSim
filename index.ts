@@ -51,9 +51,21 @@ class Boundary {
       particle.velocityY = -velocityY + Math.random() * 0.2 - 0.1; // Add random component to Y velocity change
     }
   }
+
+  resolveCollisions(particles: Particle[]) {
+    for (const particle of particles) {
+      if (this.isCollidingWith(particle)) {
+        this.resolveCollision(particle);
+      }
+    }
+  }
 }
 
 class CanvasSimulation {
+  public MAX_PARTICLES = 1000;
+  public MIN_PARTICLES = 1;
+  public MAX_ITER = 1000000;
+
   private root: HTMLElement | null;
   public canvas: HTMLCanvasElement;
   public ctx: CanvasRenderingContext2D | null;
@@ -163,33 +175,51 @@ class Particle {
   }
 }
 
+// Utility Functions
+const random_hex_color_code = () => {
+  let n = (Math.random() * 0xfffff * 1000000).toString(16);
+  return '#' + n.slice(0, 6);
+};
+
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 // Usage
 const simulation = new CanvasSimulation({ containerId: 'root' });
 simulation.initialize();
 
-const particle = new Particle({
-  ctx: simulation.ctx!,
-  x: 100,
-  y: 100,
-  radius: 10,
-  color: 'blue',
-  speed: 2,
-  velocityX: 2,
-  velocityY: 1,
-});
-particle.draw();
+const particles: Particle[] = [];
 
+const numParticles = randomIntFromInterval(
+  simulation.MIN_PARTICLES,
+  simulation.MAX_PARTICLES,
+);
+
+let i = 0;
+while (i <= numParticles && i < simulation.MAX_ITER) {
+  particles.push(new Particle({
+    ctx: simulation.ctx!,
+    x: 100,
+    y: 100,
+    radius: 10,
+    color: random_hex_color_code(),
+    speed: 2,
+    velocityX: 2,
+    velocityY: 1,
+  }));
+  i++;
+}
 
 const animate = () => {
   simulation.clearCanvas();
 
-  // Draw and update particle
-  particle.draw();
-  particle.update();
-
-  if (simulation.boundary.isCollidingWith(particle)) {
-    simulation.boundary.resolveCollision(particle);
+  for (const particle of particles) {
+    // Draw and update particle
+    particle.draw();
+    particle.update();
   }
+  simulation.boundary.resolveCollisions(particles);
 
   // Update the animation
   requestAnimationFrame(animate);

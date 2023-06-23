@@ -23,11 +23,22 @@ var Boundary = /** @class */ (function () {
             particle.velocityY = -velocityY + Math.random() * 0.2 - 0.1; // Add random component to Y velocity change
         }
     };
+    Boundary.prototype.resolveCollisions = function (particles) {
+        for (var _i = 0, particles_1 = particles; _i < particles_1.length; _i++) {
+            var particle = particles_1[_i];
+            if (this.isCollidingWith(particle)) {
+                this.resolveCollision(particle);
+            }
+        }
+    };
     return Boundary;
 }());
 var CanvasSimulation = /** @class */ (function () {
     function CanvasSimulation(_a) {
         var containerId = _a.containerId, width = _a.width, height = _a.height;
+        this.MAX_PARTICLES = 1000;
+        this.MIN_PARTICLES = 1;
+        this.MAX_ITER = 1000000;
         this.root = document.querySelector("#".concat(containerId));
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -101,28 +112,42 @@ var Particle = /** @class */ (function () {
     };
     return Particle;
 }());
+// Utility Functions
+var random_hex_color_code = function () {
+    var n = (Math.random() * 0xfffff * 1000000).toString(16);
+    return '#' + n.slice(0, 6);
+};
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
 // Usage
 var simulation = new CanvasSimulation({ containerId: 'root' });
 simulation.initialize();
-var particle = new Particle({
-    ctx: simulation.ctx,
-    x: 100,
-    y: 100,
-    radius: 10,
-    color: 'blue',
-    speed: 2,
-    velocityX: 2,
-    velocityY: 1,
-});
-particle.draw();
+var particles = [];
+var numParticles = randomIntFromInterval(simulation.MIN_PARTICLES, simulation.MAX_PARTICLES);
+var i = 0;
+while (i <= numParticles && i < simulation.MAX_ITER) {
+    particles.push(new Particle({
+        ctx: simulation.ctx,
+        x: 100,
+        y: 100,
+        radius: 10,
+        color: random_hex_color_code(),
+        speed: 2,
+        velocityX: 2,
+        velocityY: 1,
+    }));
+    i++;
+}
 var animate = function () {
     simulation.clearCanvas();
-    // Draw and update particle
-    particle.draw();
-    particle.update();
-    if (simulation.boundary.isCollidingWith(particle)) {
-        simulation.boundary.resolveCollision(particle);
+    for (var _i = 0, particles_2 = particles; _i < particles_2.length; _i++) {
+        var particle = particles_2[_i];
+        // Draw and update particle
+        particle.draw();
+        particle.update();
     }
+    simulation.boundary.resolveCollisions(particles);
     // Update the animation
     requestAnimationFrame(animate);
 };
