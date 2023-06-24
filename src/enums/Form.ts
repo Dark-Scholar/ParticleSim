@@ -6,6 +6,7 @@ namespace Form {
     export const MASSINPUT = 'num_mass';
     export const RADIUSINPUT = 'num_radius';
     export const BACKGROUNDINPUT = 'bg_color';
+    export const SHOWTRAILINPUT = 'show_trail';
   }
 
   export const SIMCONTROLS_NAME  = 'sim_controls';

@@ -22,7 +22,7 @@ class CanvasSimulation {
     containerId,
     width,
     height,
-    backgroundColor = 'white',
+    backgroundColor = '#000000',
   }: CanvasSimulationProps) {
     this.root = document.querySelector(`#${containerId}`);
     this.canvas = document.createElement('canvas');

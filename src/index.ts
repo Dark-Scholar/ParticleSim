@@ -21,7 +21,7 @@ const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLI
 const massInput = document.getElementById(Form.SIMCONTROLS.MASSINPUT) as HTMLInputElement;
 const radiusInput = document.getElementById(Form.SIMCONTROLS.RADIUSINPUT) as HTMLInputElement;
 const backgroundInput = document.getElementById(Form.SIMCONTROLS.BACKGROUNDINPUT) as HTMLInputElement;
-
+const showTrailInput = document.getElementById(Form.SIMCONTROLS.SHOWTRAILINPUT) as HTMLInputElement;
 
 const generateParticles = () => {
   const desiredNumParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
@@ -91,12 +91,20 @@ backgroundInput.addEventListener('change', (event) => {
   simulation.backgroundColor = backgroundInput.value;
 });
 
+showTrailInput.addEventListener('change', (event) => {
+  if (showTrailInput.checked) {
+    simulation.backgroundColor = '#0000';
+  } else {
+    simulation.backgroundColor = '#FFFFFF';
+  }
+});
+
 formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, Particles.INITIAL_PARTICLE_NUM.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.VELOCITYINPUT, velocityDivisor.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.SPEEDINPUT, Particles.INITIAL_SPEED.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.MASSINPUT, Particles.INITIAL_MASS.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.RADIUSINPUT, Particles.INITIAL_RADIUS.toString());
-formHandler.setInputValue(Form.SIMCONTROLS.BACKGROUNDINPUT, '#FFFFFF');
+formHandler.setInputValue(Form.SIMCONTROLS.BACKGROUNDINPUT, '#000000');
 
 generateParticles();
 
