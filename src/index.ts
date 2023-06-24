@@ -22,7 +22,7 @@ const speedInput = document.getElementById(
   Form.SIMCONTROLS.SPEEDINPUT,
 ) as HTMLInputElement;
 
-const generateParticles = () => {
+const generateParticles = ({ speed }) => {
   numParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
 
   // Regenerate particles only if the number has changed
@@ -51,14 +51,14 @@ const generateParticles = () => {
 
 particleInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
-    generateParticles();
+    generateParticles({ speed });
   }
 });
 
 speedInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
-    speed = parseInt(speedInput.value, 10) || Particles.INITIAL_SPEED;
-    generateParticles();
+    speed = parseFloat(speedInput.value) || Particles.INITIAL_SPEED;
+    generateParticles({ speed });
   }
 });
 
@@ -75,7 +75,7 @@ formHandler.setInputValue(
   Particles.INITIAL_SPEED.toString(),
 );
 
-generateParticles();
+generateParticles({ speed });
 
 const animate = () => {
   simulation.clearCanvas();
