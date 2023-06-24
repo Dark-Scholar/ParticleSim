@@ -9,6 +9,7 @@ interface ParticleProps {
   velocityY: number;
   velocityXMutator?: number;
   velocityYMutator?: number;
+  mass?: number;
 }
 
 class Particle {
@@ -22,6 +23,7 @@ class Particle {
   public speed: number;
   private velocityXMutator: number;
   private velocityYMutator: number;
+  private mass: number;
 
   constructor({
     ctx,
@@ -33,7 +35,8 @@ class Particle {
     velocityX,
     velocityY,
     velocityXMutator = 1,
-    velocityYMutator = 1
+    velocityYMutator = 1,
+    mass = 1
   }: ParticleProps) {
     this.ctx = ctx;
     this.x = x;
@@ -45,6 +48,7 @@ class Particle {
     this.speed = speed;
     this.velocityXMutator = velocityXMutator;
     this.velocityYMutator = velocityYMutator;
+    this.mass = mass;
   }
 
   draw() {

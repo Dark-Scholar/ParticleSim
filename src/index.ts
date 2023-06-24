@@ -14,7 +14,6 @@ let speed = Particles.INITIAL_SPEED;
 let particles = [];
 
 const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
-
 const particleInput = document.getElementById(Form.SIMCONTROLS.PARTICLEINPUT) as HTMLInputElement;
 const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLInputElement;
 
@@ -77,7 +76,8 @@ generateParticles();
 const animate = () => {
   simulation.clearCanvas();
 
-  for (const particle of particles) {
+  for (let i = 0; i < particles.length; i++) {
+    const particle = particles[i];
     particle.speed = speed; // Update particle speed
 
     particle.draw();
@@ -93,16 +93,58 @@ const animate = () => {
     // Adjust the position if it exceeds the boundary
     if (exceedsBoundaryX) {
       particle.velocityX *= -1; // Reverse the X velocity
+      particle.x += particle.velocityX; // Update the position
     }
 
     if (exceedsBoundaryY) {
       particle.velocityY *= -1; // Reverse the Y velocity
+      particle.y += particle.velocityY; // Update the position
     }
 
     // Update the particle's position
     particle.update();
+
+    // Check for collisions with other particles
+    for (let j = i + 1; j < particles.length; j++) {
+      const otherParticle = particles[j];
+      const dx = otherParticle.x - particle.x;
+      const dy = otherParticle.y - particle.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Check if the particles collide
+      if (distance < particle.radius + otherParticle.radius) {
+        // Calculate the collision normal
+        const normalX = dx / distance;
+        const normalY = dy / distance;
+
+        // Calculate the relative velocity
+        const relativeVelocityX = otherParticle.velocityX - particle.velocityX;
+        const relativeVelocityY = otherParticle.velocityY - particle.velocityY;
+
+        // Calculate the projection of relative velocity on the collision normal
+        const velocityProjection = relativeVelocityX * normalX + relativeVelocityY * normalY;
+
+        // Check if the particles are moving towards each other
+        if (velocityProjection < 0) {
+          // Calculate the impulse to be applied based on the mass and velocities of the particles
+          const impulse = (2 * velocityProjection) / (particle.mass + otherParticle.mass);
+
+          // Update the velocities of the particles while preserving momentum
+          particle.velocityX += impulse * otherParticle.mass * normalX;
+          particle.velocityY += impulse * otherParticle.mass * normalY;
+          otherParticle.velocityX -= impulse * particle.mass * normalX;
+          otherParticle.velocityY -= impulse * particle.mass * normalY;
+
+          // Adjust the positions to prevent overlapping
+          const overlap = 0.5 * (distance - particle.radius - otherParticle.radius);
+          particle.x -= overlap * normalX;
+          particle.y -= overlap * normalY;
+          otherParticle.x += overlap * normalX;
+          otherParticle.y += overlap * normalY;
+        }
+      }
+    }
   }
-  simulation.boundary.resolveCollisions(particles);
 
   requestAnimationFrame(animate);
 };
