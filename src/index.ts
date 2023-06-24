@@ -80,6 +80,25 @@ const animate = () => {
     particle.speed = speed; // Update particle speed
 
     particle.draw();
+
+    // Calculate the updated position
+    const nextX = particle.x + particle.velocityX;
+    const nextY = particle.y + particle.velocityY;
+
+    // Check if the updated position exceeds the boundary
+    const exceedsBoundaryX = nextX - particle.radius < 0 || nextX + particle.radius > simulation.canvas.width;
+    const exceedsBoundaryY = nextY - particle.radius < 0 || nextY + particle.radius > simulation.canvas.height;
+
+    // Adjust the position if it exceeds the boundary
+    if (exceedsBoundaryX) {
+      particle.velocityX *= -1; // Reverse the X velocity
+    }
+
+    if (exceedsBoundaryY) {
+      particle.velocityY *= -1; // Reverse the Y velocity
+    }
+
+    // Update the particle's position
     particle.update();
   }
   simulation.boundary.resolveCollisions(particles);
