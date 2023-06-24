@@ -28,12 +28,12 @@ class Boundary {
 
     // Resolve collision with left or right border
     if (x + radius > this.x + this.width || x - radius < this.x) {
-      particle.velocityX = -velocityX + Math.random() * 0.2 - 0.1; // Add random component to X velocity change
+      particle.velocityX = -velocityX + (Math.random() * 0.2 - 0.1); // Add random component to X velocity change
     }
 
     // Resolve collision with top or bottom border
     if (y + radius > this.y + this.height || y - radius < this.y) {
-      particle.velocityY = -velocityY + Math.random() * 0.2 - 0.1; // Add random component to Y velocity change
+      particle.velocityY = -velocityY + (Math.random() * 0.2 - 0.1); // Add random component to Y velocity change
     }
   }
 

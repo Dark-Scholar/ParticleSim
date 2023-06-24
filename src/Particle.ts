@@ -19,7 +19,7 @@ class Particle {
   private color: string;
   public velocityX: number;
   public velocityY: number;
-  private speed: number;
+  public speed: number;
   private velocityXMutator: number;
   private velocityYMutator: number;
 

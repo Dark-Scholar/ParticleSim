@@ -1,47 +1,93 @@
 import CanvasSimulation from './CanvasSimulation';
 import random_int_from_interval from './utils/random_int_from_interval';
 import random_hex_color_code from './utils/random_hex_color_code';
-import Particle  from './Particle';
+import Particle from './Particle';
 import FormHandler from './FormHandler';
 import Form from './enums/Form';
 import Particles from './enums/Particles';
 
-let numParticles: number = Particles.INITIAL_PARTICLE_NUM;
-
-const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
-formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, numParticles.toString());
-
 const simulation = new CanvasSimulation({ containerId: 'canvas' });
 simulation.initialize();
 
-const particles: Particle[] = [];
+let numParticles: number = Particles.INITIAL_PARTICLE_NUM;
+let velocityDivisor: number = Particles.INITIAL_VELOCITY_DIVISOR;
+let speed: number = Particles.INITIAL_SPEED;
+let particles: Particle[] = [];
 
-let i = 0;
-while (i <= numParticles && i < simulation.MAX_ITER) {
-  particles.push(new Particle({
-    ctx: simulation.ctx!,
-    x: random_int_from_interval(0, simulation.canvas.width),
-    y: random_int_from_interval(0, simulation.canvas.height),
-    radius: 10,
-    color: random_hex_color_code(),
-    speed: 1,
-    velocityX: random_int_from_interval(-2, 2),
-    velocityY: random_int_from_interval(-2, 2),
-  }));
-  i++;
-}
+const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
+const particleInput = document.getElementById(
+  Form.SIMCONTROLS.PARTICLEINPUT,
+) as HTMLInputElement;
+const speedInput = document.getElementById(
+  Form.SIMCONTROLS.SPEEDINPUT,
+) as HTMLInputElement;
+
+const generateParticles = () => {
+  numParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
+
+  // Regenerate particles only if the number has changed
+  if (numParticles !== particles.length) {
+    particles = [];
+    let i = 0;
+    while (i < numParticles && i < simulation.MAX_ITER) {
+      particles.push(
+        new Particle({
+          ctx: simulation.ctx!,
+          x: random_int_from_interval(0, simulation.canvas.width),
+          y: random_int_from_interval(0, simulation.canvas.height),
+          radius: 10,
+          color: random_hex_color_code(),
+          speed: speed,
+          velocityX: random_int_from_interval(-2, 2),
+          velocityY: random_int_from_interval(-2, 2),
+          velocityXMutator: velocityDivisor,
+          velocityYMutator: velocityDivisor,
+        })
+      );
+      i++;
+    }
+  }
+};
+
+particleInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    generateParticles();
+  }
+});
+
+speedInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    speed = parseInt(speedInput.value, 10) || Particles.INITIAL_SPEED;
+    generateParticles();
+  }
+});
+
+formHandler.setInputValue(
+  Form.SIMCONTROLS.PARTICLEINPUT,
+  Particles.INITIAL_PARTICLE_NUM.toString()
+);
+formHandler.setInputValue(
+  Form.SIMCONTROLS.VELOCITYINPUT,
+  velocityDivisor.toString()
+);
+formHandler.setInputValue(
+  Form.SIMCONTROLS.SPEEDINPUT,
+  Particles.INITIAL_SPEED.toString(),
+);
+
+generateParticles();
 
 const animate = () => {
   simulation.clearCanvas();
 
   for (const particle of particles) {
-    // Draw and update particle
+    particle.speed = speed; // Update particle speed
+
     particle.draw();
     particle.update();
   }
   simulation.boundary.resolveCollisions(particles);
 
-  // Update the animation
   requestAnimationFrame(animate);
 };
 
