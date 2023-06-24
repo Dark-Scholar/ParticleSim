@@ -9,44 +9,78 @@ import Particles from './enums/Particles';
 const simulation = new CanvasSimulation({ containerId: 'canvas' });
 simulation.initialize();
 
-let numParticles: number = Particles.INITIAL_PARTICLE_NUM;
-let velocityDivisor: number = Particles.INITIAL_VELOCITY_DIVISOR;
-let speed: number = Particles.INITIAL_SPEED;
-let particles: Particle[] = [];
+let numParticles = Particles.INITIAL_PARTICLE_NUM;
+let velocityDivisor = Particles.INITIAL_VELOCITY_DIVISOR;
+let speed = Particles.INITIAL_SPEED;
+let particles = [];
 
 const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
-const particleInput = document.getElementById(
-  Form.SIMCONTROLS.PARTICLEINPUT,
-) as HTMLInputElement;
-const speedInput = document.getElementById(
-  Form.SIMCONTROLS.SPEEDINPUT,
-) as HTMLInputElement;
+const particleInput = document.getElementById(Form.SIMCONTROLS.PARTICLEINPUT) as HTMLInputElement;
+const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLInputElement;
+
+let isFirstLoad = true;
 
 const generateParticles = ({ speed }) => {
-  numParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
+  const desiredNumParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
 
-  // Regenerate particles only if the number has changed
-  if (numParticles !== particles.length) {
-    particles = [];
-    let i = 0;
-    while (i < numParticles && i < simulation.MAX_ITER) {
-      particles.push(
-        new Particle({
-          ctx: simulation.ctx!,
-          x: random_int_from_interval(0, simulation.canvas.width),
-          y: random_int_from_interval(0, simulation.canvas.height),
-          radius: 10,
-          color: random_hex_color_code(),
-          speed: speed,
-          velocityX: random_int_from_interval(-2, 2),
-          velocityY: random_int_from_interval(-2, 2),
-          velocityXMutator: velocityDivisor,
-          velocityYMutator: velocityDivisor,
-        })
-      );
-      i++;
-    }
+  if (desiredNumParticles > particles.length) {
+    generateAdditionalParticles({ particles, desiredNumParticles });
+  } else if (desiredNumParticles < particles.length) {
+    removeParticles({ particles, desiredNumParticles });
   }
+
+  if (isFirstLoad) {
+    generateInitialParticles({ particles, numParticles });
+    isFirstLoad = false;
+  }
+};
+
+const generateInitialParticles = ({ particles, numParticles }) => {
+  let i = particles.length;
+  while (i < numParticles && i < simulation.MAX_ITER) {
+    particles.push(
+      new Particle({
+        ctx: simulation.ctx!,
+        x: random_int_from_interval(0, simulation.canvas.width),
+        y: random_int_from_interval(0, simulation.canvas.height),
+        radius: 10,
+        color: random_hex_color_code(),
+        speed: speed,
+        velocityX: random_int_from_interval(-2, 2),
+        velocityY: random_int_from_interval(-2, 2),
+        velocityXMutator: velocityDivisor,
+        velocityYMutator: velocityDivisor,
+      })
+    );
+    i++;
+  }
+};
+
+const generateAdditionalParticles = ({ particles, desiredNumParticles }) => {
+  const numParticlesToAdd = desiredNumParticles - particles.length;
+  let i = 0;
+  while (i < numParticlesToAdd && i < simulation.MAX_ITER) {
+    particles.push(
+      new Particle({
+        ctx: simulation.ctx!,
+        x: random_int_from_interval(0, simulation.canvas.width),
+        y: random_int_from_interval(0, simulation.canvas.height),
+        radius: 10,
+        color: random_hex_color_code(),
+        speed: speed,
+        velocityX: random_int_from_interval(-2, 2),
+        velocityY: random_int_from_interval(-2, 2),
+        velocityXMutator: velocityDivisor,
+        velocityYMutator: velocityDivisor,
+      })
+    );
+    i++;
+  }
+};
+
+const removeParticles = ({ particles, desiredNumParticles }) => {
+  const numParticlesToRemove = particles.length - desiredNumParticles;
+  particles.splice(desiredNumParticles, numParticlesToRemove);
 };
 
 particleInput.addEventListener('keydown', (event) => {
@@ -62,18 +96,9 @@ speedInput.addEventListener('keydown', (event) => {
   }
 });
 
-formHandler.setInputValue(
-  Form.SIMCONTROLS.PARTICLEINPUT,
-  Particles.INITIAL_PARTICLE_NUM.toString()
-);
-formHandler.setInputValue(
-  Form.SIMCONTROLS.VELOCITYINPUT,
-  velocityDivisor.toString()
-);
-formHandler.setInputValue(
-  Form.SIMCONTROLS.SPEEDINPUT,
-  Particles.INITIAL_SPEED.toString(),
-);
+formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, Particles.INITIAL_PARTICLE_NUM.toString());
+formHandler.setInputValue(Form.SIMCONTROLS.VELOCITYINPUT, velocityDivisor.toString());
+formHandler.setInputValue(Form.SIMCONTROLS.SPEEDINPUT, Particles.INITIAL_SPEED.toString());
 
 generateParticles({ speed });
 
