@@ -82,6 +82,30 @@ formHandler.setInputValue(Form.SIMCONTROLS.MASSINPUT, Particles.INITIAL_MASS.toS
 
 generateParticles();
 
+const canvas = document.getElementById('canvas');
+canvas.addEventListener('click', (event) => {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = event.clientX - rect.left;
+  const mouseY = event.clientY - rect.top;
+
+  particles.push(
+    new Particle({
+      ctx: simulation.ctx!,
+      x: mouseX,
+      y: mouseY,
+      radius: 10,
+      color: random_hex_color_code(),
+      speed: speed,
+      velocityX: random_int_from_interval(-2, 2),
+      velocityY: random_int_from_interval(-2, 2),
+      velocityXMutator: velocityDivisor,
+      velocityYMutator: velocityDivisor,
+    })
+  );
+
+  particleInput.value = particles.length.toString();
+});
+
 const animate = () => {
   simulation.clearCanvas();
 
