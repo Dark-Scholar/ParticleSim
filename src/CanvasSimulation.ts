@@ -4,12 +4,14 @@ interface CanvasSimulationProps {
   containerId: string;
   width?: number;
   height?: number;
+  backgroundColor?: string;
 }
 
 class CanvasSimulation {
   public MAX_PARTICLES = 1000;
   public MIN_PARTICLES = 1;
   public MAX_ITER = 1000000;
+  public backgroundColor;
 
   private root: HTMLElement | null;
   public canvas: HTMLCanvasElement;
@@ -20,10 +22,12 @@ class CanvasSimulation {
     containerId,
     width,
     height,
+    backgroundColor = 'white',
   }: CanvasSimulationProps) {
     this.root = document.querySelector(`#${containerId}`);
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
+    this.backgroundColor = backgroundColor;
 
     if (width && height) {
       this.canvas.width = width;
@@ -33,7 +37,7 @@ class CanvasSimulation {
 
   initialize() {
     if (this.root) {
-      this.root.style.backgroundColor = 'white';
+      this.root.style.backgroundColor = this.backgroundColor;
       this.root.style.borderRadius = '2%';
       this.root.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.3)';
       this.root.style.border = '1px solid black';
@@ -49,7 +53,8 @@ class CanvasSimulation {
   }
 
   clearCanvas() {
-    this.ctx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.fillStyle = this.backgroundColor;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
   private resizeCanvas() {

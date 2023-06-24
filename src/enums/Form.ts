@@ -5,6 +5,7 @@ namespace Form {
     export const SPEEDINPUT = 'num_speed';
     export const MASSINPUT = 'num_mass';
     export const RADIUSINPUT = 'num_radius';
+    export const BACKGROUNDINPUT = 'bg_color';
   }
 
   export const SIMCONTROLS_NAME  = 'sim_controls';
