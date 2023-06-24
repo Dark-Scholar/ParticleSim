@@ -16,6 +16,7 @@ let particles = [];
 const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
 const particleInput = document.getElementById(Form.SIMCONTROLS.PARTICLEINPUT) as HTMLInputElement;
 const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLInputElement;
+const massInput = document.getElementById(Form.SIMCONTROLS.MASSINPUT) as HTMLInputElement;
 
 const generateParticles = () => {
   const desiredNumParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
@@ -67,9 +68,17 @@ speedInput.addEventListener('keydown', (event) => {
   }
 });
 
+massInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    speed = parseFloat(massInput.value) || Particles.INITIAL_MASS;
+    generateParticles();
+  }
+});
+
 formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, Particles.INITIAL_PARTICLE_NUM.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.VELOCITYINPUT, velocityDivisor.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.SPEEDINPUT, Particles.INITIAL_SPEED.toString());
+formHandler.setInputValue(Form.SIMCONTROLS.MASSINPUT, Particles.INITIAL_MASS.toString());
 
 generateParticles();
 

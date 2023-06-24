@@ -27,17 +27,22 @@
         <form id="sim_controls">
           <div class="label_input_pair">
             <label for="num_particles">Initial Particles:</label>
-            <input type="text" id="num_particles" name="num_particles">
+            <input type="number" id="num_particles" name="num_particles" min="1">
           </div>
 
           <div class="label_input_pair">
             <label for="num_velocity">Initial Velocity Divisor:</label>
-            <input type="text" id="num_velocity" name="num_velocity" disabled>
+            <input type="number" id="num_velocity" name="num_velocity" disabled>
+          </div>
+
+          <div class="label_input_pair">
+            <label for="num_mass">Particle Mass:</label>
+            <input type="number" id="num_mass" name="num_mass">
           </div>
 
           <div class="label_input_pair">
             <label for="num_speed">Speed:</label>
-            <input type="text" id="num_speed" name="num_speed">
+            <input type="number" id="num_speed" name="num_speed">
           </div>
         </form>
       </div>
