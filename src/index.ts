@@ -11,12 +11,15 @@ simulation.initialize();
 
 let velocityDivisor = Particles.INITIAL_VELOCITY_DIVISOR;
 let speed = Particles.INITIAL_SPEED;
+let radius = Particles.INITIAL_RADIUS;
+
 let particles = [];
 
 const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
 const particleInput = document.getElementById(Form.SIMCONTROLS.PARTICLEINPUT) as HTMLInputElement;
 const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLInputElement;
 const massInput = document.getElementById(Form.SIMCONTROLS.MASSINPUT) as HTMLInputElement;
+const radiusInput = document.getElementById(Form.SIMCONTROLS.RADIUSINPUT) as HTMLInputElement;
 
 const generateParticles = () => {
   const desiredNumParticles = parseInt(particleInput.value, 10) || Particles.INITIAL_PARTICLE_NUM;
@@ -25,6 +28,15 @@ const generateParticles = () => {
     generateAdditionalParticles({ particles, desiredNumParticles });
   } else if (desiredNumParticles < particles.length) {
     removeParticles({ particles, desiredNumParticles });
+  } else {
+    // Update the radius of existing particles
+    updateParticleRadius();
+  }
+};
+
+const updateParticleRadius = () => {
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].radius = radius;
   }
 };
 
@@ -32,20 +44,19 @@ const generateAdditionalParticles = ({ particles, desiredNumParticles }) => {
   const numParticlesToAdd = desiredNumParticles - particles.length;
   let i = 0;
   while (i < numParticlesToAdd && i < simulation.MAX_ITER) {
-    particles.push(
-      new Particle({
-        ctx: simulation.ctx!,
-        x: random_int_from_interval(0, simulation.canvas.width),
-        y: random_int_from_interval(0, simulation.canvas.height),
-        radius: 10,
-        color: random_hex_color_code(),
-        speed: speed,
-        velocityX: random_int_from_interval(-2, 2),
-        velocityY: random_int_from_interval(-2, 2),
-        velocityXMutator: velocityDivisor,
-        velocityYMutator: velocityDivisor,
-      })
-    );
+    const particle = new Particle({
+      ctx: simulation.ctx!,
+      x: random_int_from_interval(0, simulation.canvas.width),
+      y: random_int_from_interval(0, simulation.canvas.height),
+      radius,
+      color: random_hex_color_code(),
+      speed,
+      velocityX: random_int_from_interval(-2, 2),
+      velocityY: random_int_from_interval(-2, 2),
+      velocityXMutator: velocityDivisor,
+      velocityYMutator: velocityDivisor,
+    });
+    particles.push(particle);
     i++;
   }
 };
@@ -55,30 +66,30 @@ const removeParticles = ({ particles, desiredNumParticles }) => {
   particles.splice(desiredNumParticles, numParticlesToRemove);
 };
 
-particleInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    generateParticles();
-  }
+particleInput.addEventListener('change', (event) => {
+  generateParticles();
 });
 
-speedInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    speed = parseFloat(speedInput.value) || Particles.INITIAL_SPEED;
-    generateParticles();
-  }
+speedInput.addEventListener('change', (event) => {
+  speed = parseFloat(speedInput.value) || Particles.INITIAL_SPEED;
+  generateParticles();
 });
 
-massInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    speed = parseFloat(massInput.value) || Particles.INITIAL_MASS;
-    generateParticles();
-  }
+massInput.addEventListener('change', (event) => {
+  speed = parseFloat(massInput.value) || Particles.INITIAL_MASS;
+  generateParticles();
+});
+
+radiusInput.addEventListener('change', (event) => {
+  radius = parseFloat(radiusInput.value) || Particles.INITIAL_RADIUS;
+  generateParticles();
 });
 
 formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, Particles.INITIAL_PARTICLE_NUM.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.VELOCITYINPUT, velocityDivisor.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.SPEEDINPUT, Particles.INITIAL_SPEED.toString());
 formHandler.setInputValue(Form.SIMCONTROLS.MASSINPUT, Particles.INITIAL_MASS.toString());
+formHandler.setInputValue(Form.SIMCONTROLS.RADIUSINPUT, Particles.INITIAL_RADIUS.toString());
 
 generateParticles();
 

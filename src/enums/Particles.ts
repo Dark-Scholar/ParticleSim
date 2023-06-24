@@ -5,6 +5,7 @@ namespace Particles {
   export const INITIAL_VELOCITY_DIVISOR = 5;
   export const INITIAL_SPEED = 1;
   export const INITIAL_MASS = 1;
+  export const INITIAL_RADIUS = 10;
 }
 
 export default Particles;
