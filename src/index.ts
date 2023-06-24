@@ -14,6 +14,7 @@ let speed = Particles.INITIAL_SPEED;
 let particles = [];
 
 const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
+
 const particleInput = document.getElementById(Form.SIMCONTROLS.PARTICLEINPUT) as HTMLInputElement;
 const speedInput = document.getElementById(Form.SIMCONTROLS.SPEEDINPUT) as HTMLInputElement;
 
