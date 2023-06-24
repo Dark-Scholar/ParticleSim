@@ -111,7 +111,7 @@ canvas.addEventListener('click', (event) => {
       ctx: simulation.ctx!,
       x: mouseX,
       y: mouseY,
-      radius: 10,
+      radius: radius,
       color: random_hex_color_code(),
       speed: speed,
       velocityX: random_int_from_interval(-2, 2),
