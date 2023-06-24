@@ -10,15 +10,32 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="./static/css/main.css">
 
+    <script src="https://unpkg.com/jss/dist/jss.min.js"></script>
     <script type="module" src="./static/bundle/script.js" defer></script>
   </head>
-  <body style="background-color: #202124;">
+  <body>
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div id="canvas"></div>
+    <div class="container">
+      <div id="canvas"></div>
+
+      <div class="container controls">
+        <form>
+          <div class="label_input_pair">
+            <label for="num_particles">Initial Particles:</label>
+            <input type="text" id="num_particles" name="num_particles">
+          </div>
+
+          <div class="label_input_pair">
+            <label for="num_velocity">Initial Velocity:</label>
+            <input type="text" id="num_velocity" name="num_velocity">
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
