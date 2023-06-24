@@ -2,13 +2,19 @@ import CanvasSimulation from './CanvasSimulation';
 import random_int_from_interval from './utils/random_int_from_interval';
 import random_hex_color_code from './utils/random_hex_color_code';
 import Particle  from './Particle';
+import FormHandler from './FormHandler';
+import Form from './enums/Form';
+import Particles from './enums/Particles';
+
+let numParticles: number = Particles.INITIAL_PARTICLE_NUM;
+
+const formHandler = new FormHandler(Form.SIMCONTROLS_NAME);
+formHandler.setInputValue(Form.SIMCONTROLS.PARTICLEINPUT, numParticles.toString());
 
 const simulation = new CanvasSimulation({ containerId: 'canvas' });
 simulation.initialize();
 
 const particles: Particle[] = [];
-
-const numParticles = 1;
 
 let i = 0;
 while (i <= numParticles && i < simulation.MAX_ITER) {
