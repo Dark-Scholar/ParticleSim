@@ -3,16 +3,12 @@ import random_int_from_interval from './utils/random_int_from_interval';
 import random_hex_color_code from './utils/random_hex_color_code';
 import Particle  from './Particle';
 
-// Usage
-const simulation = new CanvasSimulation({ containerId: 'root' });
+const simulation = new CanvasSimulation({ containerId: 'canvas' });
 simulation.initialize();
 
 const particles: Particle[] = [];
 
-const numParticles = random_int_from_interval(
-  simulation.MIN_PARTICLES,
-  simulation.MAX_PARTICLES,
-);
+const numParticles = 1;
 
 let i = 0;
 while (i <= numParticles && i < simulation.MAX_ITER) {
